@@ -1,6 +1,0 @@
-dev/demo/openbank/paymentrisk/infrastructure/messaging/AmountThresholdRule.class
-dev/demo/openbank/paymentrisk/service/RiskEngine.class
-dev/demo/openbank/paymentrisk/service/RiskRule.class
-dev/demo/openbank/paymentrisk/infrastructure/messaging/RiskKafkaProcessor.class
-dev/demo/openbank/paymentrisk/Application.class
-dev/demo/openbank/paymentrisk/infrastructure/messaging/VelocityRule.class
