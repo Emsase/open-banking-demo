@@ -1,0 +1,6 @@
+/Users/emilio.sanchez/Downloads/open-banking-demo-layered-pro-sec/payment-risk/src/main/java/dev.demo.openbank.paymentrisk/Application.java
+/Users/emilio.sanchez/Downloads/open-banking-demo-layered-pro-sec/payment-risk/src/main/java/dev.demo.openbank.paymentrisk/service/RiskEngine.java
+/Users/emilio.sanchez/Downloads/open-banking-demo-layered-pro-sec/payment-risk/src/main/java/dev.demo.openbank.paymentrisk/infrastructure/messaging/AmountThresholdRule.java
+/Users/emilio.sanchez/Downloads/open-banking-demo-layered-pro-sec/payment-risk/src/main/java/dev.demo.openbank.paymentrisk/infrastructure/messaging/VelocityRule.java
+/Users/emilio.sanchez/Downloads/open-banking-demo-layered-pro-sec/payment-risk/src/main/java/dev.demo.openbank.paymentrisk/infrastructure/messaging/RiskKafkaProcessor.java
+/Users/emilio.sanchez/Downloads/open-banking-demo-layered-pro-sec/payment-risk/src/main/java/dev.demo.openbank.paymentrisk/service/RiskRule.java

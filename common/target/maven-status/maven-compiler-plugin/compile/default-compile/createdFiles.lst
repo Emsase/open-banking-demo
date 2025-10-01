@@ -1,0 +1,9 @@
+dev/demo/openbank/common/events/PaymentEvents.class
+dev/demo/openbank/common/events/PaymentEvents$PaymentRiskApproved$PaymentRiskApprovedBuilder.class
+dev/demo/openbank/common/events/PaymentEvents$PaymentRiskRejected$PaymentRiskRejectedBuilder.class
+dev/demo/openbank/common/events/PaymentEvents$PaymentBankAccepted.class
+dev/demo/openbank/common/events/PaymentEvents$PaymentBankAccepted$PaymentBankAcceptedBuilder.class
+dev/demo/openbank/common/events/PaymentEvents$PaymentRequested.class
+dev/demo/openbank/common/events/PaymentEvents$PaymentRequested$PaymentRequestedBuilder.class
+dev/demo/openbank/common/events/PaymentEvents$PaymentRiskRejected.class
+dev/demo/openbank/common/events/PaymentEvents$PaymentRiskApproved.class

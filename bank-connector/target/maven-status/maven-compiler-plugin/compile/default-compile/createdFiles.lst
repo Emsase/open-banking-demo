@@ -1,0 +1,3 @@
+dev/demo/openbank/bankconnector/service/BankService.class
+dev/demo/openbank/bankconnector/infrastructure/messaging/BankKafkaProcessor.class
+dev/demo/openbank/bankconnector/Application.class
