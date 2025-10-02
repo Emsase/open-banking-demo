@@ -1,0 +1,42 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      group-id: bank
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+resilience4j:
+  bulkhead:
+    instances:
+      bankClient:
+        maxConcurrentCalls: 50 # Max concurrent calls to the bank per instance
+        maxWaitDuration: 100ms # How long to wait for a slot; after this, fail fast
+
+  circuitbreaker:
+    instances:
+      bankClient:
+        slidingWindowSize: 20 # Number of recent calls to measure
+        minimumNumberOfCalls: 10 # Don't evaluate failure rate before this many calls
+        failureRateThreshold: 50 # Open the circuit if >50% of calls fail
+        waitDurationInOpenState: 5s # Time to keep the circuit open before trying half-open
+        permittedNumberOfCallsInHalfOpenState: 3 # Trial calls when half-open
+        automaticTransitionFromOpenToHalfOpenEnabled: true # Auto move from OPEN -> HALF_OPEN after wait
+
+  retry:
+    instances:
+      bankClient:
+        maxAttempts: 3 # 1 initial try + 2 retries
+        waitDuration: 200ms # Base backoff delay between retries
+        enableExponentialBackoff: true # Exponential backoff (e.g., 200ms, 400ms, 800ms)
+        exponentialBackoffMultiplier: 2.0
+        enableRandomizedWait: true # Jitter to avoid retry storms
+        randomizedWaitFactor: 0.5
+        retryExceptions: # Only retry these exception types
+          - java.util.concurrent.TimeoutException
+          - java.io.IOException
+          - java.lang.RuntimeException # Adjust to transient failures you expect
+
