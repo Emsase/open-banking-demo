@@ -1,0 +1,154 @@
+openapi: 3.0.3
+info:
+  title: Open Banking Demo – Public API (Gateway)
+  version: "1.0.0"
+  description: |
+    API-first payment orchestration via Gateway.
+    - Demo uses JWT HS256; production should use OAuth2/JWKS.
+    - Scopes enforced: `payments:create`, `payments:read`.
+
+servers:
+  - url: http://localhost:8080
+    description: Local Dev
+
+tags:
+  - name: Payments
+    description: Create and query payments (idempotent create)
+
+paths:
+  /api/v1/payments:
+    post:
+      tags: [Payments]
+      summary: Create a payment (idempotent)
+      description: |
+        Creates a SEPA payment. Use `Idempotency-Key` header to avoid duplicates.
+      security:
+        - oauth2:
+            - payments:create
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          description: Idempotency key (UUID). If repeated, the same result is returned.
+          required: false
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentRequest'
+            examples:
+              sample:
+                value:
+                  debtorIban: ES7921000418450200051332
+                  creditorIban: DE75512108001245126199
+                  amount: "12.34"
+                  currency: EUR
+      responses:
+        '201':
+          description: Payment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePaymentResponse'
+              examples:
+                created:
+                  value: { paymentId: "8f6e4b1c-3a94-46d5-9f9b-3d1a8f1f9c21", status: CREATED }
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (missing scope)
+  /api/v1/payments/{id}:
+    get:
+      tags: [Payments]
+      summary: Get payment by id
+      security:
+        - oauth2:
+            - payments:read
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Payment state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentView'
+              examples:
+                ok:
+                  value:
+                    id: "8f6e4b1c-3a94-46d5-9f9b-3d1a8f1f9c21"
+                    status: RISK_APPROVED
+                    amount: "12.34"
+                    currency: EUR
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden (missing scope) }
+        '404': { description: Not found }
+
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://idp.example.com/oauth/token
+          scopes:
+            payments:create: Create payments
+            payments:read: Read payments
+            audit:read: Read audit events
+  schemas:
+    CreatePaymentRequest:
+      type: object
+      required: [debtorIban, creditorIban, amount, currency]
+      properties:
+        debtorIban:
+          type: string
+          example: ES7921000418450200051332
+        creditorIban:
+          type: string
+          example: DE75512108001245126199
+        amount:
+          type: string
+          pattern: '^\d+(\.\d{1,2})?$'
+          example: "12.34"
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: EUR
+    CreatePaymentResponse:
+      type: object
+      required: [paymentId, status]
+      properties:
+        paymentId: { type: string, format: uuid }
+        status:
+          type: string
+          enum: [CREATED, RISK_APPROVED, REJECTED, EXECUTED, FAILED]
+    PaymentView:
+      type: object
+      required: [id, status, amount, currency]
+      properties:
+        id: { type: string, format: uuid }
+        status:
+          type: string
+          enum: [CREATED, RISK_APPROVED, REJECTED, EXECUTED, FAILED]
+        amount: { type: string, example: "12.34" }
+        currency: { type: string, example: EUR }
+    Error:
+      type: object
+      properties:
+        code: { type: string, example: "VALIDATION_ERROR" }
+        message: { type: string, example: "Invalid IBAN" }
+
+security:
+  - oauth2: []

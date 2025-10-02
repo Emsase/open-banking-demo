@@ -1,0 +1,54 @@
+openapi: 3.0.3
+info:
+  title: Open Banking Demo – Audit Service API
+  version: "1.0.0"
+  description: >
+    Read-only audit API. Requires scope `audit:read`.
+
+servers:
+  - url: http://localhost:8084
+    description: Local Dev
+
+tags:
+  - name: Audit
+
+paths:
+  /events:
+    get:
+      tags: [Audit]
+      summary: List audit events
+      description: Returns a chronological list of domain events (JSONB-based).
+      security:
+        - oauth2:
+            - audit:read
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AuditRecord' }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://idp.example.com/oauth/token
+          scopes:
+            audit:read: Read audit events
+  schemas:
+    AuditRecord:
+      type: object
+      properties:
+        id: { type: integer, format: int64, example: 123 }
+        topic: { type: string, example: payment.requested }
+        keyRef: { type: string, example: 8f6e4b1c-3a94-46d5-9f9b-3d1a8f1f9c21 }
+        createdAt: { type: string, format: date-time }
+        payload:
+          type: object
+          additionalProperties: true
